@@ -88,6 +88,7 @@ exception Connection_error of ssl_error
 exception Accept_error of ssl_error
 exception Read_error of ssl_error
 exception Write_error of ssl_error
+exception Shutdown_error of ssl_error
 exception Verify_error of verify_error
 
 let () =
@@ -103,6 +104,7 @@ let () =
   Callback.register_exception "ssl_exn_accept_error" (Accept_error Error_none);
   Callback.register_exception "ssl_exn_read_error" (Read_error Error_none);
   Callback.register_exception "ssl_exn_write_error" (Write_error Error_none);
+  Callback.register_exception "ssl_exn_shutdown_error" (Shutdown_error Error_none);
   Callback.register_exception "ssl_exn_verify_error" (Verify_error Error_v_application_verification)
 
 let thread_safe = ref false
@@ -193,6 +195,8 @@ external accept : socket -> unit = "ocaml_ssl_accept"
 external flush : socket -> unit = "ocaml_ssl_flush"
 
 external shutdown : socket -> unit = "ocaml_ssl_shutdown"
+
+external half_shutdown : socket -> bool = "ocaml_ssl_shutdown_2"
 
 let open_connection_with_context context sockaddr =
   let domain =

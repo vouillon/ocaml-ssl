@@ -904,6 +904,24 @@ CAMLprim value ocaml_ssl_shutdown(value socket)
   CAMLreturn(Val_unit);
 }
 
+CAMLprim value ocaml_ssl_shutdown_2(value socket)
+{
+  CAMLparam1(socket);
+  SSL *ssl = SSL_val(socket);
+  int ret, err;
+
+  caml_enter_blocking_section();
+  ERR_clear_error();
+  ret = SSL_shutdown(ssl);
+  err = SSL_get_error(ssl, ret);
+  caml_leave_blocking_section();
+
+  if (ret < 0)
+    caml_raise_with_arg(*caml_named_value("ssl_exn_shutdown_error"), Val_int(err));
+
+  CAMLreturn(Val_bool (ret));
+}
+
 /* ======================================================== */
 /*
    T.F.:

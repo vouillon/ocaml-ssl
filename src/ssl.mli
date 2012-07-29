@@ -92,6 +92,9 @@ exception Read_error of ssl_error
 (** An error occured while writing data. *)
 exception Write_error of ssl_error
 
+(** An error occured while shuting down an SSL connection. *)
+exception Shutdown_error of ssl_error
+
 (** Why did the certificate verification fail? *)
 type verify_error =
   | Error_v_unable_to_get_issuer_cert
@@ -345,6 +348,12 @@ val flush : socket -> unit
 
 (** Close an SSL connection. *)
 val shutdown : socket -> unit
+
+(** Close an SSL connection. This function performs only half of a
+    shudown; for a bidirectional shutdown, it should be called a
+    second time if [false] is returned. A [Shutdown_error] exception
+    is raised in case of error. *)
+val half_shutdown : socket -> bool
 
 
 (** {2 I/O on SSL sockets} *)
